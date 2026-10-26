@@ -6,13 +6,9 @@ pipeline {
         stage('Run Selenium Tests with pytest') {
             steps {
                 echo "Running Selenium Tests using pytest"
-
                 bat 'pip install -r requirements.txt'
-
                 bat 'start /B python app.py'
-
                 bat 'ping 127.0.0.1 -n 5 > nul'
-
                 bat 'pytest -v'
             }
         }
@@ -26,14 +22,20 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-                bat 'docker login -u vanamsanjana9'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    bat 'echo %DOCKERHUB_TOKEN% | docker login -u %DOCKERHUB_USER% --password-stdin'
+                }
             }
         }
 
         stage('Push Docker Image to Docker Hub') {
             steps {
                 echo "Push Docker Image to Docker Hub"
-                bat 'docker tag seleniumdemapp:v1 bhavani765/sample:seleniumtestimage'
+                bat 'docker tag seleniumdemapp:v1 vanamsanjana9/sample:seleniumtestimage'
                 bat 'docker push vanamsanjana9/sample:seleniumtestimage'
             }
         }
