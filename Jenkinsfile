@@ -11,9 +11,9 @@ pipeline {
 
                 bat 'start /B python app.py'
 
-                bat 'timeout /t 5'
+                bat 'ping 127.0.0.1 -n 5 > nul'
 
-                bat 'pytest tests\\test_registrationapp.py --maxfail=1 --disable-warnings'
+                bat 'pytest -v'
             }
         }
 
